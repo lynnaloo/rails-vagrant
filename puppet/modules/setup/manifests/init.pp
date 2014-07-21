@@ -1,7 +1,6 @@
 # inspired by https://github.com/rails/rails-dev-box/blob/master/puppet/manifests/default.pp
 
-class setup($ruby_version = "2.0") {
-
+class setup($ruby_version = "2.0.0-p481") {
   $ar_databases = ['activerecord_unittest', 'activerecord_unittest2']
   $as_vagrant   = 'sudo -u vagrant -H bash -l -c'
   $home         = '/home/vagrant/'
