@@ -1,9 +1,9 @@
 # inspired by https://github.com/rails/rails-dev-box/blob/master/puppet/manifests/default.pp
 
-class setup($ruby_version = "2.0.0-p481") {
-  $ar_databases = ['activerecord_unittest', 'activerecord_unittest2']
+class setup($ruby_version = "2.0.0") {
+
   $as_vagrant   = 'sudo -u vagrant -H bash -l -c'
-  $home         = '/home/vagrant/'
+  $home         = '/home/vagrant'
 
   Exec {
     path => ['/usr/sbin', '/usr/bin', '/sbin', '/bin']
@@ -38,6 +38,18 @@ class setup($ruby_version = "2.0.0-p481") {
     ensure => installed
   }
 
+  package { 'vim':
+    ensure => installed
+  }
+
+  package { 'ca-certificates':
+    ensure => installed
+  }
+
+  package { ['openssl', 'libssl-dev']:
+    ensure => installed
+  }
+
   # Nokogiri dependencies.
   package { ['libxml2', 'libxml2-dev', 'libxslt1-dev']:
     ensure => installed
@@ -62,7 +74,7 @@ class setup($ruby_version = "2.0.0-p481") {
     # The rvm executable is more suitable for automated installs.
 
     # use a ruby patch level known to have a binary
-    command => "${as_vagrant} '${home}/.rvm/bin/rvm install ruby-${ruby_version} --binary --autolibs=enabled && rvm alias create default ${ruby_version}'",
+    command => "${as_vagrant} '${home}/.rvm/bin/rvm install ruby-${ruby_version} --autolibs=enabled && rvm alias create default ${ruby_version}'",
     creates => "${home}/.rvm/bin/ruby",
     require => Exec['install_rvm']
   }
@@ -70,12 +82,6 @@ class setup($ruby_version = "2.0.0-p481") {
   # RVM installs a version of bundler, but for edge Rails we want the most recent one.
   exec { "${as_vagrant} 'gem install bundler --no-rdoc --no-ri'":
     creates => "${home}/.rvm/bin/bundle",
-    require => Exec['install_ruby']
-  }
-
-  # Install dashing gem
-  exec { 'install_dashing':
-    command => "${as_vagrant} 'gem install dashing'",
     require => Exec['install_ruby']
   }
 }
